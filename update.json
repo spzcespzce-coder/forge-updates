@@ -1,8 +1,8 @@
 {
-  "version": "0.5.4",
-  "downloadPage": "download.html",
-  "portable": "Forge AI.exe",
-  "installer": "Forge AI Setup.exe",
-  "zip": "Forge AI.zip",
-  "notes": "Adds tray background mode, bigger Deep mode context, smoother download page motion, file line counts, command notifications, and a right-side file preview."
+  "version": "0.5.5",
+  "downloadPage": "https://spzcespzce-coder.github.io/forge-updates/",
+  "portable": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge%20AI.exe",
+  "installer": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge%20AI%20Setup.exe",
+  "zip": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge%20AI.zip",
+  "notes": "Adds language-aware color coded code blocks and file previews, plus the 0.5.4 UI, update, and output improvements."
 }
