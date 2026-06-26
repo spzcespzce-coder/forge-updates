@@ -1,0 +1,974 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forge AI Download</title>
+    <script>
+        if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+        }
+        window.scrollTo(0, 0);
+    </script>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #030303;
+            --text: #eeeeee;
+            --muted: #9b9b9b;
+            --faint: #5f5f5f;
+            --orange: #ff7a1a;
+            --orange-soft: rgba(255, 122, 26, 0.18);
+            --line: rgba(255, 255, 255, 0.11);
+            --panel: rgba(255, 255, 255, 0.045);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            animation: pageIn 900ms ease both;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                linear-gradient(115deg, transparent 0 31%, rgba(255, 122, 26, 0.1) 31.2%, transparent 32%),
+                radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.12), transparent 30%),
+                radial-gradient(circle at 72% 18%, rgba(255, 122, 26, 0.13), transparent 22%),
+                radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 28%),
+                #030303;
+            animation: wallpaper 14s ease-in-out infinite alternate;
+        }
+
+        body::after {
+            opacity: 0.22;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            mask-image: linear-gradient(to bottom, black, transparent 82%);
+            animation: grid 22s linear infinite;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: grid;
+            place-items: center;
+            background: #030303;
+            pointer-events: none;
+            animation: introOut 1200ms ease 900ms both;
+        }
+
+        body.loaded .intro-screen {
+            animation: introOut 700ms ease 450ms both;
+        }
+
+        .intro-mark {
+            display: grid;
+            gap: 14px;
+            text-align: center;
+            transform: translateY(10px);
+            animation: introMark 900ms ease both;
+        }
+
+        .intro-line {
+            width: min(220px, 58vw);
+            height: 2px;
+            overflow: hidden;
+            margin: 2px auto 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .intro-line::before {
+            content: "";
+            display: block;
+            width: 42%;
+            height: 100%;
+            border-radius: inherit;
+            background: var(--orange);
+            animation: loadLine 900ms ease-in-out both;
+        }
+
+        .intro-mark strong {
+            font-size: clamp(32px, 8vw, 72px);
+            line-height: 1;
+        }
+
+        .intro-mark span {
+            color: var(--orange);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 18px clamp(18px, 4vw, 48px);
+            border-bottom: 1px solid var(--line);
+            background: rgba(3, 3, 3, 0.76);
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .brand::after {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-left: 9px;
+            border-radius: 999px;
+            background: var(--orange);
+            box-shadow: 0 0 18px var(--orange);
+            vertical-align: 1px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav a {
+            position: relative;
+            padding: 8px 10px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            color: var(--muted);
+            font-size: 14px;
+            text-decoration: none;
+            transition: transform 160ms ease, color 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        nav a:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 122, 26, 0.12);
+            border-color: rgba(255, 122, 26, 0.24);
+            color: var(--text);
+        }
+
+        nav a.active {
+            color: var(--text);
+            border-color: rgba(255, 122, 26, 0.38);
+            background: rgba(255, 122, 26, 0.12);
+        }
+
+        .download-nav {
+            border: 1px solid rgba(255, 122, 26, 0.55);
+            background: rgba(255, 122, 26, 0.1);
+            color: var(--text);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        nav a:focus-visible,
+        .button:focus-visible {
+            outline: 2px solid var(--orange);
+            outline-offset: 4px;
+        }
+
+        .hero > * {
+            animation: riseIn 720ms ease both;
+        }
+
+        .hero .lead {
+            animation-delay: 90ms;
+        }
+
+        .hero .actions {
+            animation-delay: 180ms;
+        }
+
+        .hero .info {
+            animation-delay: 260ms;
+        }
+
+        main {
+            width: min(940px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: grid;
+            align-content: center;
+            min-height: calc(100vh - 64px);
+            padding: 64px 0;
+        }
+
+        .label {
+            margin: 0 0 20px;
+            color: var(--orange);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        h1 {
+            max-width: 760px;
+            margin: 0;
+            font-size: clamp(54px, 12vw, 118px);
+            line-height: 0.92;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .lead {
+            max-width: 620px;
+            margin: 26px 0 0;
+            color: var(--muted);
+            font-size: clamp(17px, 2.4vw, 21px);
+            line-height: 1.55;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 34px;
+        }
+
+        .button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 52px;
+            overflow: hidden;
+            padding: 0 24px;
+            border: 1px solid rgba(255, 122, 26, 0.72);
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 42%),
+                var(--orange);
+            color: #080808;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow:
+                0 16px 44px rgba(255, 122, 26, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        .button::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 0 32%, rgba(255, 255, 255, 0.32) 45%, transparent 58% 100%);
+            transform: translateX(-130%);
+            transition: transform 520ms ease;
+        }
+
+        .button::after {
+            content: "->";
+            position: relative;
+            font-weight: 900;
+            transition: transform 160ms ease;
+        }
+
+        .button span,
+        .button {
+            isolation: isolate;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 170, 92, 0.9);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 42%),
+                #ff8d3d;
+            box-shadow: 0 20px 54px rgba(255, 122, 26, 0.3);
+            animation: buttonGlow 900ms ease-in-out infinite alternate;
+        }
+
+        .button:hover::before {
+            transform: translateX(130%);
+        }
+
+        .button:hover::after {
+            transform: translateX(3px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 28px rgba(255, 122, 26, 0.2);
+        }
+
+        .button.secondary {
+            background: rgba(255, 255, 255, 0.055);
+            color: var(--text);
+            border-color: var(--line);
+            box-shadow: none;
+        }
+
+        .button.secondary::after {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid var(--orange);
+            border-bottom: 2px solid var(--orange);
+            transform: rotate(45deg) translateY(-2px);
+        }
+
+        .button.secondary:hover {
+            border-color: rgba(255, 122, 26, 0.42);
+            background: rgba(255, 122, 26, 0.1);
+            box-shadow: none;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 42px;
+        }
+
+        .item {
+            min-height: 120px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 122, 26, 0.42);
+            background: rgba(255, 122, 26, 0.07);
+        }
+
+        .item strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .item p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        section {
+            padding: 64px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        section:not(.hero) {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 620ms ease, transform 620ms ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section.flash,
+        main.flash {
+            border-color: rgba(255, 122, 26, 0.42);
+            box-shadow: 0 0 0 1px rgba(255, 122, 26, 0.18), 0 22px 70px rgba(255, 122, 26, 0.08);
+        }
+
+        h2 {
+            margin: 0 0 16px;
+            font-size: clamp(30px, 5vw, 48px);
+            letter-spacing: 0;
+        }
+
+        section p {
+            max-width: 660px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .release {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .release::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 122, 26, 0.16), transparent);
+            transform: translateX(-120%);
+            animation: sweep 3.6s ease-in-out infinite;
+        }
+
+        .release > * {
+            position: relative;
+        }
+
+        .release span {
+            color: var(--muted);
+        }
+
+        .steps {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 42px 1fr;
+            gap: 14px;
+            align-items: start;
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+        }
+
+        .num {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: var(--orange-soft);
+            color: var(--orange);
+            font-weight: 800;
+        }
+
+        .step strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .step p {
+            margin: 0;
+        }
+
+        .strip {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1px;
+            overflow: hidden;
+            margin-top: 24px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--line);
+        }
+
+        .strip div {
+            min-height: 94px;
+            padding: 16px;
+            background: rgba(8, 8, 8, 0.9);
+        }
+
+        .strip strong {
+            display: block;
+            color: var(--orange);
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .strip span {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .card {
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 122, 26, 0.36);
+            background: rgba(255, 122, 26, 0.06);
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+        }
+
+        .card strong {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--orange);
+        }
+
+        .card p {
+            margin: 0;
+        }
+
+        .faq {
+            display: grid;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        details {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            transition: border-color 160ms ease, background 160ms ease;
+        }
+
+        details:hover,
+        details[open] {
+            border-color: rgba(255, 122, 26, 0.34);
+            background: rgba(255, 122, 26, 0.055);
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 16px;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        details p {
+            margin: 0;
+            padding: 0 16px 16px;
+        }
+
+        footer {
+            padding: 28px 0 42px;
+            border-top: 1px solid var(--line);
+            color: var(--faint);
+            font-size: 14px;
+        }
+
+        @keyframes wallpaper {
+            from {
+                transform: scale(1) translate3d(-1%, -1%, 0);
+            }
+
+            to {
+                transform: scale(1.07) translate3d(1%, 1%, 0);
+            }
+        }
+
+        @keyframes grid {
+            to {
+                background-position: 56px 56px;
+            }
+        }
+
+        @keyframes loadLine {
+            from {
+                transform: translateX(-110%);
+            }
+
+            to {
+                transform: translateX(170%);
+            }
+        }
+
+        @keyframes pageIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes introMark {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes introOut {
+            0%,
+            55% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes buttonGlow {
+            from {
+                filter: saturate(1);
+            }
+
+            to {
+                filter: saturate(1.25);
+            }
+        }
+
+        @keyframes sweep {
+            0% {
+                transform: translateX(-120%);
+            }
+
+            52%,
+            100% {
+                transform: translateX(120%);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 1ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 1ms !important;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            nav {
+                justify-content: flex-start;
+            }
+
+            .info {
+                grid-template-columns: 1fr;
+            }
+
+            .strip {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .button,
+            .actions {
+                width: 100%;
+            }
+
+            .strip {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="intro-screen" aria-hidden="true">
+        <div class="intro-mark">
+            <strong>Forge</strong>
+            <span>download ready</span>
+            <div class="intro-line"></div>
+        </div>
+    </div>
+
+    <header class="topbar">
+        <a class="brand" href="#home">Forge AI</a>
+        <nav aria-label="Main navigation">
+            <a href="#download">Download</a>
+            <a href="#inside">Inside</a>
+            <a href="#setup">Setup</a>
+            <a href="#versions">Versions</a>
+            <a href="#requirements">Requirements</a>
+            <a href="#faq">FAQ</a>
+            <a href="#next">Next update</a>
+            <a href="#about">About</a>
+            <a class="download-nav" href="Forge AI.exe" download>Get it</a>
+        </nav>
+    </header>
+
+    <main id="home">
+        <section class="hero">
+            <p class="label">Made by spzc3</p>
+            <h1>Forge AI</h1>
+            <p class="lead">
+                A simple black, gray, and orange download page. Current build is below, with an update manifest older Forge AI apps can check.
+            </p>
+            <div class="actions" id="download">
+                <a class="button" href="Forge AI.exe" download>Download Forge AI</a>
+                <a class="button secondary" href="Forge AI Setup.exe" download>Installer</a><a class="button secondary" href="Forge AI.zip" download>ZIP</a>
+            </div>
+
+            <div class="info">
+                <article class="item">
+                    <strong>Current file</strong>
+                    <p>Keep Forge AI.exe in this same folder and the download button will use it.</p>
+                </article>
+                <article class="item">
+                    <strong>Next update</strong>
+                    <p>Upload update.json beside this page so older apps can see the newest build.</p>
+                </article>
+                <article class="item">
+                    <strong>Style</strong>
+                    <p>Black and gray base, orange highlight, simple motion, no logo, no extra tools.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="inside">
+            <h2>What You Get</h2>
+            <p>
+                Forge AI is kept simple here: portable EXE, installer, ZIP, update.json, and a page that can be updated when the next version is ready.
+            </p>
+            <div class="strip" aria-label="Forge AI highlights">
+                <div>
+                    <strong>01</strong>
+                    <span>Direct download button for the current build.</span>
+                </div>
+                <div>
+                    <strong>02</strong>
+                    <span>Update manifest support so older apps can check the newest build.</span>
+                </div>
+                <div>
+                    <strong>03</strong>
+                    <span>Dark layout with orange accents and an animated background.</span>
+                </div>
+                <div>
+                    <strong>04</strong>
+                    <span>Made by spzc3, without extra signups or clutter.</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="setup">
+            <h2>Setup</h2>
+            <p>
+                Keep the page, update.json, and app files together in this folder. When Forge AI.exe stays beside this page, the download link keeps working.
+            </p>
+            <div class="steps">
+                <article class="step">
+                    <span class="num">1</span>
+                    <div>
+                        <strong>Add the app file</strong>
+                        <p>Put Forge AI.exe in the same folder as this page.</p>
+                    </div>
+                </article>
+                <article class="step">
+                    <span class="num">2</span>
+                    <div>
+                        <strong>Open the page</strong>
+                        <p>Send people to this page so they can download the current build.</p>
+                    </div>
+                </article>
+                <article class="step">
+                    <span class="num">3</span>
+                    <div>
+                        <strong>Replace it later</strong>
+                        <p>When the next build comes out, replace the files and update update.json.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="versions">
+            <h2>Versions</h2>
+            <p>
+                Keep the current public build simple. When a new one comes out, swap the files and update update.json.
+            </p>
+            <div class="cards">
+                <article class="card">
+                    <strong>Current</strong>
+                    <p>Forge AI.exe is the download file this page is built around.</p>
+                </article>
+                <article class="card">
+                    <strong>Coming next</strong>
+                    <p>The next build can replace the current files and bump update.json.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="requirements">
+            <h2>Requirements</h2>
+            <p>
+                This page is only the download page. Forge AI.exe, Forge AI Setup.exe, Forge AI.zip, and update.json should sit beside it.
+            </p>
+            <div class="cards">
+                <article class="card">
+                    <strong>File name</strong>
+                    <p>Forge AI.exe</p><p>Forge AI Setup.exe</p><p>Forge AI.zip</p><p>update.json</p>
+                </article>
+                <article class="card">
+                    <strong>Page type</strong>
+                    <p>Static HTML. Open it normally or upload it to a simple web host.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="next">
+            <h2>Next Version</h2>
+            <p>
+                A new Forge AI build is coming. When it is ready, replace the files and update update.json so installed apps can find it.
+            </p>
+            <div class="release">
+                <strong>Status: next build coming</strong>
+                <span>Current download: Forge AI.exe · updater: update.json</span>
+            </div>
+        </section>
+
+        <section id="faq">
+            <h2>FAQ</h2>
+            <p>Quick answers for anyone downloading Forge AI.</p>
+            <div class="faq">
+                <details>
+                    <summary>Where is the download?</summary>
+                    <p>Use the orange download button at the top, or the Get it button in the nav.</p>
+                </details>
+                <details>
+                    <summary>What happens when the next version comes out?</summary>
+                    <p>Replace the files and update update.json. Forge AI Settings can check that manifest URL.</p>
+                </details>
+                <details>
+                    <summary>Who made Forge AI?</summary>
+                    <p>Forge AI is made by spzc3.</p>
+                </details>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>About</h2>
+            <p>
+                Forge AI is made by spzc3. This page is for downloading the app. Forge AI runs locally and does not sell or upload your chats/files.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <main>Forge AI by spzc3</main>
+    </footer>
+    <script>
+        window.addEventListener("pageshow", () => {
+            if (!location.hash) {
+                window.scrollTo(0, 0);
+            }
+        });
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("loaded");
+            window.setTimeout(() => document.querySelector(".intro-screen")?.remove(), 1800);
+            if (!location.hash) window.scrollTo(0, 0);
+        });
+
+        const navLinks = [...document.querySelectorAll('a[href^="#"]')];
+        const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+        const flashSection = (section) => {
+            document.querySelectorAll("section.flash, main.flash").forEach((item) => item.classList.remove("flash"));
+            section.classList.add("flash");
+            window.setTimeout(() => section.classList.remove("flash"), 1400);
+        };
+        const scrollToSection = (section) => {
+            const start = window.scrollY;
+            const target = Math.max(0, section.getBoundingClientRect().top + window.scrollY - 74);
+            const distance = target - start;
+            const duration = Math.min(1100, Math.max(420, Math.abs(distance) * 0.48));
+            const started = performance.now();
+            const step = (now) => {
+                const progress = Math.min(1, (now - started) / duration);
+                window.scrollTo(0, start + distance * easeOutCubic(progress));
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    flashSection(section);
+                }
+            };
+            requestAnimationFrame(step);
+        };
+        navLinks.forEach((link) => {
+            link.addEventListener("click", (event) => {
+                const target = document.querySelector(link.getAttribute("href"));
+                if (!target) return;
+                event.preventDefault();
+                history.pushState(null, "", link.getAttribute("href"));
+                scrollToSection(target);
+            });
+        });
+
+        const revealSections = document.querySelectorAll("section:not(.hero)");
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+                const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+                if (link) link.classList.toggle("active", entry.isIntersecting);
+            });
+        }, { threshold: 0.16 });
+
+        revealSections.forEach((section) => observer.observe(section));
+    </script>
+</body>
+</html>

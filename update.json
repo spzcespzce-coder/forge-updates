@@ -1,0 +1,8 @@
+{
+  "version": "0.5.4",
+  "downloadPage": "download.html",
+  "portable": "Forge AI.exe",
+  "installer": "Forge AI Setup.exe",
+  "zip": "Forge AI.zip",
+  "notes": "Adds tray background mode, bigger Deep mode context, smoother download page motion, file line counts, command notifications, and a right-side file preview."
+}
