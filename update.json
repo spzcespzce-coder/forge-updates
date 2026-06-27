@@ -1,8 +1,8 @@
 {
-  "version": "0.5.5",
+  "version": "0.5.7",
   "downloadPage": "https://spzcespzce-coder.github.io/forge-updates/",
-  "portable": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge%20AI.exe",
-  "installer": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge.AI.Setup.exe",
-  "zip": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.5/Forge%20AI.zip",
-  "notes": "Adds language-aware color coded code blocks and file previews, plus the 0.5.4 UI, update, and output improvements."
+  "portable": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.7/Forge%20AI.exe",
+  "installer": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.7/Forge.AI.Setup.exe",
+  "zip": "https://github.com/spzcespzce-coder/forge-updates/releases/download/v0.5.7/Forge%20AI.zip",
+  "notes": "Adds a different AI model and improvements."
 }
